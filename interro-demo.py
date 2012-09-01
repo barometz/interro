@@ -23,11 +23,10 @@ print(c.data[0].validation)
 print(c.data[1].validation)
 c.start()
 
-q = c.nextquestion()
-
+q = c.question()
 while q:
     print(q)
     c.answer(input('> '))
-    q = c.nextquestion()
+    q = c.question()
 
 print(c.results())
