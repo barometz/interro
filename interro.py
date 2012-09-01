@@ -93,14 +93,14 @@ class Interro:
         if self._current:
             message = ''
             if self._pendingconfirmation:
-                message = 'You entered {0}.  Are you sure? [yes/no]'.format(self._current.value)
+                message = 'You entered {d.value}.  Are you sure? [yes/no]'
             else:
                 if self._current.error:
-                    message = 'Error: {0}\n'.format(self._current.error)
-                message += self._current.question
+                    message = 'Error: {d.error}\n'
+                message += '{d.question}'
                 if self._current.value is None and self._current.message:
-                    message += '\n{0}'.format(self._current.message)
-            return message
+                    message += '\n{d.message}'
+            return message.format(d=self._current)
         else:
             return None
         
