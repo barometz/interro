@@ -35,9 +35,7 @@ class Datum:
         Returns false immediately when any test fails, otherwise True.
         """
         for test, error in self.validation:
-            try:
-                assert(test(self.value))
-            except AssertionError:
+            if not test(self.value):
                 self.error = error
                 return False
         self.error = None
