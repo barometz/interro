@@ -14,10 +14,11 @@ class Datum:
     error = None
     value = None
     question = None
+    message = None
     confirm = False
     validation = None
 
-    def __init__(self, name, question, confirm=False, validation=[]):
+    def __init__(self, name, question, confirm=False, validation=[], message=None):
         """Create a new Datum.
 
         name: the name of this Datum
@@ -27,6 +28,7 @@ class Datum:
         """
         self.name = name
         self.question = question
+        self.message = message
         self.confirm = confirm
         self.validation = []
         for test, error in validation:
@@ -69,9 +71,9 @@ class Interro:
         self.data = []
         self._todo = []
 
-    def adddatum(self, name, question, confirm=False, validation=[]):
+    def adddatum(self, name, question, confirm=False, validation=[], message=None):
         """Convenience wrapper for Datum.__init__()"""
-        self.data.append(Datum(name, question, confirm, validation))
+        self.data.append(Datum(name, question, confirm, validation, message))
 
     def start(self):
         """Fresh start, creating a fresh queue of unasked questions."""
@@ -91,11 +93,13 @@ class Interro:
         if self._current:
             message = ''
             if self._pendingconfirmation:
-                message = '{0} is valid.  Are you sure? [yes/no]'.format(self._current.value)
+                message = 'You entered {0}.  Are you sure? [yes/no]'.format(self._current.value)
             else:
                 if self._current.error:
                     message = 'Error: {0}\n'.format(self._current.error)
                 message += self._current.question
+                if self._current.value is None and self._current.message:
+                    message += '\n{0}'.format(self._current.message)
             return message
         else:
             return None

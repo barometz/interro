@@ -27,7 +27,8 @@ emailcheck = [(lambda x: x != '',     'Email cannot be empty.'),
 agecheck =   [(lambda x: x.isdigit(), 'Please enter only whole numbers.')]
 
 interrogation.adddatum('email', 'What is your email address?', 
-                       confirm=True, validation=emailcheck)
+                       confirm=True, validation=emailcheck, 
+                       message='We will not share you email with bad people.')
 interrogation.adddatum('age', 'What is your age?', 
                        validation=agecheck)
 
