@@ -89,27 +89,3 @@ class Interro:
             self._current = self._todo.pop(0)
         else:
             self._current = None
-
-if __name__ == '__main__':
-    c = Interro()
-    i = Datum('email', 'What is your email address?', confirm=True,
-                 validation=[(lambda x: x != '', 'Email cannot be empty.'),
-                             (lambda x: '@' in x, 'This is not a valid email address.')])
-    c.data.append(i)
-    i = Datum('age', 'What is your age?', 
-                 validation=[(lambda x: x.isdigit(), 'Please enter only whole numbers.')])
-    c.data.append(i)
-    print(c.data)
-    print(c.data[0].validation)
-    print(c.data[1].validation)
-    c.start()
-
-    q = c.nextquestion()
-
-    while q:
-        print(q)
-        c.answer(input('> '))
-        q = c.nextquestion()
-
-    print(c.results())
-    
