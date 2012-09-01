@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-
-class InfoItem:
+class Datum:
     name = None
     error = None
     value = None
@@ -38,7 +37,7 @@ class InfoItem:
                 
 
 class Interro:
-    infoitems = []
+    data = []
     _todo = []
     _current = None
     _pendingconfirmation = False
@@ -48,12 +47,12 @@ class Interro:
         pass
 
     def start(self):
-        self._todo = list(self.infoitems)
-        self.nextitem()
+        self._todo = list(self.data)
+        self.nextdatum()
 
     def results(self):
         res = {}
-        for item in self.infoitems:
+        for item in self.data:
             res[item.name] = item.value
         return res
 
@@ -75,7 +74,7 @@ class Interro:
             value = value.lower()
             if value in ['yes', 'y']:
                 self._pendingconfirmation = False
-                self.nextitem()
+                self.nextdatum()
             elif value in ['no', 'n']:
                 self._pendingconfirmation = False
         else:
@@ -83,9 +82,9 @@ class Interro:
                 if self._current.confirm:
                     self._pendingconfirmation = True
                 else:
-                    self.nextitem()
+                    self.nextdatum()
     
-    def nextitem(self):
+    def nextdatum(self):
         if len(self._todo):
             self._current = self._todo.pop(0)
         else:
@@ -93,16 +92,16 @@ class Interro:
 
 if __name__ == '__main__':
     c = Interro()
-    i = InfoItem('email', 'What is your email address?', confirm=True,
+    i = Datum('email', 'What is your email address?', confirm=True,
                  validation=[(lambda x: x != '', 'Email cannot be empty.'),
                              (lambda x: '@' in x, 'This is not a valid email address.')])
-    c.infoitems.append(i)
-    i = InfoItem('age', 'What is your age?', 
+    c.data.append(i)
+    i = Datum('age', 'What is your age?', 
                  validation=[(lambda x: x.isdigit(), 'Please enter only whole numbers.')])
-    c.infoitems.append(i)
-    print(c.infoitems)
-    print(c.infoitems[0].validation)
-    print(c.infoitems[1].validation)
+    c.data.append(i)
+    print(c.data)
+    print(c.data[0].validation)
+    print(c.data[1].validation)
     c.start()
 
     q = c.nextquestion()
