@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+#
+# Copyright (c) 2012 Dominic van Berkel.  See LICENSE for details.
+#
 
 class Datum:
     """Stores the value and validation checks for one piece of information.

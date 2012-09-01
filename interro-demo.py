@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 #
+# Copyright (c) 2012 Dominic van Berkel.  See LICENSE for details.
+#
 # Demonstration script for interro.py.  This will always work with the version
 # of interro.py in the same revision.
 #
