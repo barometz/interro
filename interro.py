@@ -66,8 +66,12 @@ class Interro:
         self.data = []
         self._todo = []
 
+    def adddatum(self, name, question, confirm=False, validation=[]):
+        """Convenience wrapper for Datum.__init__()"""
+        self.data.append(Datum(name, question, confirm, validation))
+
     def start(self):
-        """Fresh start, creating a fresh queue of to-be-asked questions."""
+        """Fresh start, creating a fresh queue of unasked questions."""
         self._todo = list(self.data)
         self.nextdatum()
 
