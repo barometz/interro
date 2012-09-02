@@ -123,7 +123,7 @@ class InterroQ:
             return self.default
             
 
-class StringQ(InterroQ):
+class TextQ(InterroQ):
     """Text question class.
 
     Does very little, other than - if desired - making sure the input isn't

@@ -13,12 +13,12 @@ c.add(inter.YesNoQ('TOS',
                    question='Do you agree to the TOS?',
                    onanswer={True: 'email'},
                    default='noTOS'))
-c.add(inter.StringQ('email',
-                    question='What is your email address?',
-                    message='We will not share this with bad people',
-                    validation=[(lambda x: '@' in x, 'Invalid address.'),
-                                (lambda x: x != None, 'Cannot be empty')],
-                    confirm=True))
+c.add(inter.TextQ('email',
+                  question='What is your email address?',
+                  message='We will not share this with bad people',
+                  validation=[(lambda x: '@' in x, 'Invalid address.'),
+                              (lambda x: x != None, 'Cannot be empty')],
+                  confirm=True))
 c.add(inter.InterroQ('noTOS',
                      message='Well, that\'s unfortunate. Bye!'))
 
