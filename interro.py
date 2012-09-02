@@ -191,13 +191,15 @@ class Interro:
     questions = None
     current = None
     messages = None
+    _msg = None
     complete = False
     _pendinganswer = None
     _pendingconfirmation = False
     
-    def __init__(self):
+    def __init__(self, msg_callback=None):
         self.messages = []
         self.questions = {}
+        self._msg = msg_callback or self.messages.append
 
     def results(self):
         """Get a dictionary of {name: value} with the results so far"""
@@ -230,7 +232,7 @@ class Interro:
             if value in ['yes', 'y']:
                 self._nextquestion()
             else:
-                self.messages.append(cur.question)
+                self._msg(cur.question)
             self._pendingconfirmation = False
         else:
             # Throw the answer at the current question
@@ -239,12 +241,12 @@ class Interro:
                 if cur.confirm:
                     self._pendingconfirmation = True
                     confirmq = 'You entered {value}.  Are you certain? [yes/no]'
-                    self.messages.append(confirmq.format(value=value))
+                    self._msg(confirmq.format(value=value))
                 else:
                     self._nextquestion()
             else:
-                self.messages.append('Error: {0}'.format(cur.error))
-                self.messages.append(cur.question)
+                self._msg('Error: {0}'.format(cur.error))
+                self._msg(cur.question)
 
     def _nextquestion(self, goto=None):
         """Move to the next question, if any.
@@ -263,8 +265,8 @@ class Interro:
             goto = goto or nextq
             self.current = self.questions[goto]
             if self.current.question:
-                self.messages.append(self.current.question)
+                self._msg(self.current.question)
             if self.current.message:
-                self.messages.append(self.current.message)
+                self._msg(self.current.message)
             if not self.current.question:
                 self._nextquestion()

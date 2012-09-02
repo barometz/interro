@@ -7,7 +7,7 @@
 
 import interro as inter
 
-c = inter.Interro()
+c = inter.Interro(msg_callback=print)
 
 c.add(inter.YesNoQ('TOS',
                    question='Do you agree to the TOS?',
@@ -24,12 +24,8 @@ c.add(inter.InterroQ('noTOS',
 
 c.start('TOS')
 
-while c.messages:
-    print(c.messages.pop(0))
 while not c.complete:
     response = input('> ')
     c.answer(response)
-    while c.messages:
-        print(c.messages.pop(0))
 
 print(c.results())
