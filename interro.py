@@ -188,7 +188,7 @@ class Interro:
     processed that doesn't actually have a question attached to it.
 
     """
-    tree = None
+    questions = None
     current = None
     messages = None
     complete = False
@@ -198,24 +198,24 @@ class Interro:
     
     def __init__(self, start='start'):
         self.messages = []
-        self.tree = {}
+        self.questions = {}
         self._start = start
 
     def results(self):
         """Get a dictionary of {name: value} with the results so far"""
         res = {}
-        for q in self.tree.values():
+        for q in self.questions.values():
             if q.value is not None:
                 res[q.name] = q.value
         return res
 
-    def add(self, datum):
+    def add(self, question):
         """Add an InterroQ instance to the list."""
-        self.tree[datum.name] = datum
+        self.questions[question.name] = question
 
     def start(self):
         """Start pulling questions."""
-        self._nextdatum(goto=self._start)
+        self._nextquestion(goto=self._start)
 
     def answer(self, value):
         """Process an answer.
@@ -230,7 +230,7 @@ class Interro:
         if self._pendingconfirmation:
             value = value.strip().lower()
             if value in ['yes', 'y']:
-                self._nextdatum()
+                self._nextquestion()
             else:
                 self.messages.append(cur.question)
             self._pendingconfirmation = False
@@ -243,12 +243,12 @@ class Interro:
                     confirmq = 'You entered {value}.  Are you certain? [yes/no]'
                     self.messages.append(confirmq.format(value=value))
                 else:
-                    self._nextdatum()
+                    self._nextquestion()
             else:
                 self.messages.append('Error: {0}'.format(cur.error))
                 self.messages.append(cur.question)
 
-    def _nextdatum(self, goto=None):
+    def _nextquestion(self, goto=None):
         """Move to the next question, if any.
 
         Sets self.complete to true if the new InterroQ doesn't actually have a
@@ -263,7 +263,7 @@ class Interro:
             self.complete = True
         else:
             goto = goto or nextq
-            self.current = self.tree[goto]
+            self.current = self.questions[goto]
             if self.current.question:
                 self.messages.append(self.current.question)
             else:
