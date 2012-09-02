@@ -6,8 +6,8 @@
 
 class InterroQ:
     name = ''
-    question = ''
-    message = ''
+    question = None
+    message = None
     default = None
     onanswer = None
     validation = None
@@ -16,7 +16,7 @@ class InterroQ:
     error = None
     value = None
 
-    def __init__(self, name, question='', message='', default=None, 
+    def __init__(self, name, question=None, message=None, default=None, 
                  onanswer=None, validation=None, confirm=False):
         self.name = name
         self.question = question
@@ -160,7 +160,7 @@ class Interro:
             self.current = self.tree[goto]
             if self.current.question:
                 self.messages.append(self.current.question)
-            if self.current.message:
-                self.messages.append(self.current.message)
             else:
                 self.complete = True
+            if self.current.message:
+                self.messages.append(self.current.message)

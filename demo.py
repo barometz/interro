@@ -5,7 +5,7 @@
 # Copyright (c) 2012 Dominic van Berkel.  See LICENSE for details.
 #
 
-import interro2 as inter
+import interro as inter
 
 c = inter.Interro(start='TOS')
 
