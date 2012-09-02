@@ -264,7 +264,7 @@ class Interro:
             self.current = self.questions[goto]
             if self.current.question:
                 self.messages.append(self.current.question)
-            else:
-                self.complete = True
             if self.current.message:
                 self.messages.append(self.current.message)
+            if not self.current.question:
+                self._nextquestion()
