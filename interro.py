@@ -1,131 +1,166 @@
-#!/usr/bin/env python3
+# A module to interactively extract information from users.
 #
 # Copyright (c) 2012 Dominic van Berkel.  See LICENSE for details.
 #
 
-class Datum:
-    """Stores the value and validation checks for one piece of information.
-    
-    validation is a list of (test, error) tuples.  In this list, test must be 
-    a function taking one argument, evaluating to True or False depending on 
-    whether the argument is considered valid.
-    """
-    name = None
+
+class InterroQ:
+    name = ''
+    question = ''
+    message = ''
+    default = None
+    onanswer = None
+    validation = None
+    confirm = False
+    type_validation = None
     error = None
     value = None
-    question = None
-    message = None
-    confirm = False
-    validation = None
 
-    def __init__(self, name, question, confirm=False, validation=[], message=None):
-        """Create a new Datum.
-
-        name: the name of this Datum
-        question: the question to ask the user.
-        confirm: Whether the system should ask for confirmation before 
-                 committing this Datum.
-        """
+    def __init__(self, name, question='', message='', default=None, 
+                 onanswer=None, validation=None, confirm=False):
         self.name = name
         self.question = question
         self.message = message
+        self.default = default
+        self.onanswer = onanswer or {}
+        self.validation = validation or []
         self.confirm = confirm
-        self.validation = []
-        for test, error in validation:
-            self.validation.append((test, error))
+        self.add_typechecks()
 
-    def validate(self):
-        """Check the current value for compliance with all validation tests.
+    def add_typechecks(self, *args):
+        self.type_validation = args
 
-        Returns false immediately when any test fails, otherwise True.
-        """
+    def preprocess(self, value):
+        return value
+
+    def validate(self, value):
+        value = self.preprocess(value)
+        for test, error in self.type_validation:
+            if not test(value):
+                self.error = error
+                return False
         for test, error in self.validation:
-            if not test(self.value):
+            if not test(value):
                 self.error = error
                 return False
         self.error = None
         return True
 
-    def setandcheck(self, value):
-        """Set a new value, and return True if the value is valid."""
-        self.value = value
-        return self.validate()
-                
+    def parse(self, value):
+        return self.preprocess(value)
+
+    def store(self, value):
+        self.value = self.parse(value)
+
+    def nextq(self):
+        if self.onanswer and self.value in self.onanswer:
+            return self.onanswer[self.value]
+        else:
+            return self.default
+            
+
+class StringQ(InterroQ):
+    empty_allowed = False
+
+    def __init__(self, name, empty_allowed=False, **kwargs):
+        self.empty_allowed = empty_allowed
+        super().__init__(name, **kwargs)
+
+    def add_typechecks(self, *args):
+        empty = (self.test_empty, 'This may not be empty.')
+        super().add_typechecks(empty, *args)
+
+    def preprocess(self, value):
+        return value.strip()
+
+    def test_empty(self, value):
+        if self.empty_allowed:
+            return True
+        else:
+            if value not in [None, '']:
+                return True
+            else:
+                return False
+
+
+class YesNoQ(InterroQ):
+    def add_typechecks(self, *args):
+        yesno = (lambda x: x in ['y', 'yes', 'n', 'no'], 'Please enter yes or no.')
+        super().add_typechecks(yesno, *args)
+
+    def preprocess(self, value):
+        return value.strip().lower()
+
+    def parse(self, value):
+        value = self.preprocess(value)
+        if value in ['y', 'yes']:
+            return True
+        else:
+            return False
+
 
 class Interro:
-    """The "interrogation" class.
-
-    Keeps track of the desired Datum objects and keeps asking until it's
-    satisfied that all of them validate.
-
-    The interface to the outside is rather procedural, mostly in an attempt to
-    support asynchronous users such as IRC bots that can't just stick around
-    in a for loop until the conversation's done.
-    """
-    data = None
-    _todo = None
-    _current = None
+    tree = None
+    current = None
+    messages = None
+    complete = False
+    _start = ''
+    _pendinganswer = None
     _pendingconfirmation = False
-
-    def __init__(self):
-        self.data = []
-        self._todo = []
-
-    def adddatum(self, name, question, confirm=False, validation=[], message=None):
-        """Convenience wrapper for Datum.__init__()"""
-        self.data.append(Datum(name, question, confirm, validation, message))
-
-    def start(self):
-        """Fresh start, creating a fresh queue of unasked questions."""
-        self._todo = list(self.data)
-        self.nextdatum()
+    
+    def __init__(self, start='start'):
+        self.messages = []
+        self.tree = {}
+        self._start = start
 
     def results(self):
-        """Returns all results that have been collected so far"""
         res = {}
-        for item in self.data:
-            if (item.value != None):
-                res[item.name] = item.value
+        for q in self.tree.values():
+            if q.value is not None:
+                res[q.name] = q.value
         return res
 
-    def question(self):
-        """Returns the current question or None when all is done."""
-        if self._current:
-            message = ''
-            if self._pendingconfirmation:
-                message = 'You entered {d.value}.  Are you sure? [yes/no]'
-            else:
-                if self._current.error:
-                    message = 'Error: {d.error}\n'
-                message += '{d.question}'
-                if self._current.value is None and self._current.message:
-                    message += '\n{d.message}'
-            return message.format(d=self._current)
-        else:
-            return None
-        
-    def answer(self, value):
-        """Provide an answer for the last question asked.  
+    def add(self, datum):
+        self.tree[datum.name] = datum
 
-        Returns nothing, but may advance the Interro object to the next datum
-        when the answer is valid and/or confirmed."""
+    def start(self):
+        self._nextdatum(goto=self._start)
+
+    def answer(self, value):
+        cur = self.current
         if self._pendingconfirmation:
-            value = value.lower()
+            value = value.strip().lower()
             if value in ['yes', 'y']:
-                self._pendingconfirmation = False
-                self.nextdatum()
-            elif value in ['no', 'n']:
-                self._pendingconfirmation = False
+                self._nextdatum()
+            else:
+                self.messages.append(cur.question)
+            self._pendingconfirmation = False
         else:
-            if self._current.setandcheck(value):
-                if self._current.confirm:
+            if cur.validate(value):
+                cur.store(value)
+                if cur.confirm:
                     self._pendingconfirmation = True
+                    confirmq = 'You entered {value}.  Are you certain? [yes/no]'
+                    self.messages.append(confirmq.format(value=value))
                 else:
-                    self.nextdatum()
-    
-    def nextdatum(self):
-        """Go to the next required Datum, or set it to None when done."""
-        if len(self._todo):
-            self._current = self._todo.pop(0)
+                    self._nextdatum()
+            else:
+                self.messages.append('Error: {0}'.format(cur.error))
+                self.messages.append(cur.question)
+
+    def _nextdatum(self, goto=None):
+        if self.current:
+            nextq = self.current.nextq()
         else:
-            self._current = None
+            nextq = None
+        if goto is None and nextq is None:
+            self.complete = True
+        else:
+            goto = goto or nextq
+            self.current = self.tree[goto]
+            if self.current.question:
+                self.messages.append(self.current.question)
+            if self.current.message:
+                self.messages.append(self.current.message)
+            else:
+                self.complete = True
