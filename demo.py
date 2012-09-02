@@ -7,7 +7,7 @@
 
 import interro as inter
 
-c = inter.Interro(start='TOS')
+c = inter.Interro()
 
 c.add(inter.YesNoQ('TOS',
                    question='Do you agree to the TOS?',
@@ -22,7 +22,7 @@ c.add(inter.StringQ('email',
 c.add(inter.InterroQ('noTOS',
                      message='Well, that\'s unfortunate. Bye!'))
 
-c.start()
+c.start('TOS')
 
 while c.messages:
     print(c.messages.pop(0))

@@ -192,14 +192,12 @@ class Interro:
     current = None
     messages = None
     complete = False
-    _start = ''
     _pendinganswer = None
     _pendingconfirmation = False
     
-    def __init__(self, start='start'):
+    def __init__(self):
         self.messages = []
         self.questions = {}
-        self._start = start
 
     def results(self):
         """Get a dictionary of {name: value} with the results so far"""
@@ -213,9 +211,9 @@ class Interro:
         """Add an InterroQ instance to the list."""
         self.questions[question.name] = question
 
-    def start(self):
+    def start(self, start='start'):
         """Start pulling questions."""
-        self._nextquestion(goto=self._start)
+        self._nextquestion(goto=start)
 
     def answer(self, value):
         """Process an answer.
