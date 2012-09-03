@@ -170,3 +170,13 @@ class YesNoQ(InterroQ):
             return True
         else:
             return False
+
+
+class MessageQ(InterroQ):
+    """Subclass that can only have a message.
+
+    Mostly exists so you don't have to use InterroQ for this sort of thing.
+
+    """
+    def __init__(self, name, message='', default=None, **kwargs):
+        super().__init__(name, message=message, default=default)

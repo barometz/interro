@@ -19,7 +19,7 @@ c.add(inter.TextQ('email',
                   validation=[(lambda x: '@' in x, 'Invalid address.'),
                               (lambda x: x != None, 'Cannot be empty')],
                   confirm=True))
-c.add(inter.InterroQ('noTOS',
+c.add(inter.MessageQ('noTOS',
                      message='Well, that\'s unfortunate. Bye!'))
 
 c.start('TOS')
