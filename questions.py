@@ -180,3 +180,39 @@ class MessageQ(InterroQ):
     """
     def __init__(self, name, message='', default=None, **kwargs):
         super().__init__(name, message=message, default=default)
+
+
+class NumberQ(InterroQ):
+    req_positive = False
+    def __init__(self, name, req_positive=False, **kwargs):
+        self.req_positive = req_positive
+        super().__init__(name, **kwargs)
+
+    def add_typechecks(self, *args):
+        number = (self.check_number, 'Please enter a whole number')
+        positive = (self.check_positive, 'Please enter a positive number')
+        super().add_typechecks(number, positive, *args)
+
+    def preprocess(self, value):
+        return value.strip()
+
+    def check_number(self, value):
+        try:
+            num = int(value)
+        except ValueError:
+            return False
+        return True
+
+    def check_positive(self, value):
+        if self.req_positive:
+            try:
+                value = int(value)
+            except:
+                return False
+            if value < 0:
+                return False
+        return True
+
+    def parse(self, value):
+        value = self.preprocess(value)
+        return int(value)
