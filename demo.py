@@ -12,13 +12,13 @@ c = inter.Interro(msg_callback=print)
 c.add(inter.YesNoQ('TOS',
                    question='Do you agree to the TOS?',
                    onanswer={True: 'email'},
-                   default='noTOS'))
+                   default_next='noTOS'))
 c.add(inter.TextQ('email',
                   question='What is your email address?',
                   message='We will not share this with bad people',
                   validation=[(lambda x: '@' in x, 'Invalid address.')],
                   confirm=True,
-                  default='age'))
+                  default_next='age'))
 c.add(inter.NumberQ('age',
                     question='How old are you?',
                     req_positive=True))

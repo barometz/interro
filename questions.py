@@ -25,19 +25,7 @@ class InterroQ:
       str.strip() and .lower()
 
     """
-
-    name = ''
-    question = None
-    message = None
-    default = None
-    onanswer = None
-    validation = None
-    confirm = False
-    type_validation = None
-    error = None
-    value = None
-
-    def __init__(self, name, question=None, message=None, default=None, 
+    def __init__(self, name, question=None, message=None, default_next=None, 
                  onanswer=None, validation=None, confirm=False):
         """Create an InterroQ instance.
 
@@ -57,10 +45,12 @@ class InterroQ:
         self.name = name
         self.question = question
         self.message = message
-        self.default = default
+        self.default_next = default_next
         self.onanswer = onanswer or {}
         self.validation = validation or []
         self.confirm = confirm
+        self.error = None
+        self.value = None
         self.add_typechecks()
 
     def add_typechecks(self, *args):
@@ -120,7 +110,7 @@ class InterroQ:
         if self.onanswer and self.value in self.onanswer:
             return self.onanswer[self.value]
         else:
-            return self.default
+            return self.default_next
             
 
 class TextQ(InterroQ):
@@ -178,8 +168,8 @@ class MessageQ(InterroQ):
     Mostly exists so you don't have to use InterroQ for this sort of thing.
 
     """
-    def __init__(self, name, message='', default=None, **kwargs):
-        super().__init__(name, message=message, default=default)
+    def __init__(self, name, message='', default_next=None, **kwargs):
+        super().__init__(name, message=message, default_next=default_next)
 
 
 class NumberQ(InterroQ):

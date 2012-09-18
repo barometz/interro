@@ -20,18 +20,14 @@ class Interro:
     results() to get a dictionary of results.  Terminates when an InterroQ is
     processed that doesn't actually have a question attached to it.
 
-    """
-    questions = None
-    current = None
-    messages = None
-    _msg = None
-    complete = False
-    _pendinganswer = None
-    _pendingconfirmation = False
-    
+    """    
     def __init__(self, msg_callback=None):
         self.messages = []
         self.questions = {}
+        self.current = None
+        self.complete = False
+        self._pendinganswer = None
+        self._pendingconfirmation = False
         self._msg = msg_callback or self.messages.append
 
     def results(self):
