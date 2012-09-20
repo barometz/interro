@@ -7,16 +7,7 @@
 
 import interro as inter
 
-def output(value):
-    """A little wrapper to print things.
-
-    Necessary to have the msg_callback work in Python 2.7, where print isn't a
-    function.
-
-    """
-    print(value)
-
-c = inter.Interro(msg_callback=output)
+c = inter.Interro(msg_callback=print)
 
 c.add(inter.YesNoQ('TOS',
                    question='Do you agree to the TOS?',
