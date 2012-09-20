@@ -5,7 +5,7 @@
 
 # from questions import *
 
-class Interro:
+class Interro(object):
     """Core "interrogation" class.
 
     Keeps track of the questions in what is essentially a singly-linked list.
