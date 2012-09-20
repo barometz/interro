@@ -3,7 +3,7 @@
 # Copyright (c) 2012 Dominic van Berkel.  See LICENSE for details.
 #
 
-from questions import *
+# from questions import *
 
 class Interro:
     """Core "interrogation" class.
